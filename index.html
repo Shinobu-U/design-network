@@ -239,6 +239,8 @@
 
         .data-table tr:last-child td { border-bottom: none; }
 
+        .data-table td:first-child input { width: 48px !important; text-align: center; background: var(--surface) !important; color: var(--secondary) !important; cursor: default !important; }
+
         .data-table input, .data-table select {
             width: 100%;
             padding: 4px 8px;
@@ -301,6 +303,7 @@
             transition: border-color 0.2s;
         }
         .modal-form-group input:focus, .modal-form-group select:focus { border-color: var(--fg); }
+        #newId { flex: 0 0 auto !important; width: 72px !important; min-width: 0 !important; }
         .modal-form-group small { display: block; margin-top: 4px; font-size: 11px; color: var(--secondary); }
         .modal-buttons { display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end; }
 
@@ -880,10 +883,10 @@
                     <h2 id="addDataModalTitle">新規データを追加</h2>
                 </div>
                 <form id="addDataForm">
-                    <div class="modal-form-group">
-                        <label for="newId">識別番号</label>
-                        <input type="text" id="newId" required>
-                        <small>自動生成: 次の番号 = <span id="nextIdSuggestion">0</span></small>
+                    <div class="modal-form-group" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <label for="newId" style="margin:0;white-space:nowrap;">識別番号</label>
+                        <input type="text" id="newId" required readonly style="flex:0 0 auto;width:72px;background:var(--surface);color:var(--secondary);cursor:default;">
+                        <small style="margin:0;">自動生成: 次の番号 = <span id="nextIdSuggestion">0</span></small>
                     </div>
                     <div class="modal-form-group"><label for="newName">氏名</label><input type="text" id="newName" required></div>
                     <div class="modal-form-group">
@@ -911,12 +914,12 @@
                     <div class="modal-form-group"><label for="newLifespan">生没年</label><input type="text" id="newLifespan" placeholder="例: 1913-2005"></div>
                     <div class="modal-form-group">
                         <label for="newJoinYear">在籍年</label>
-                        <input type="text" id="newJoinYear" placeholder="例: 1946　複数の場合は | で区切る（例: 1946|1952）">
+                        <input type="text" id="newJoinYear" placeholder="例: 1946–1955　複数の場合は | で区切る（例: 1946–1955|1958–1963）">
                         <small>複数の事務所に在籍した場合は | で区切ってください</small>
                     </div>
                     <div class="modal-form-group"><label for="newIndependentYear">独立年</label><input type="text" id="newIndependentYear" placeholder="例: 1961"></div>
                     <div class="modal-form-group"><label for="newOwnFirm">設立事務所</label><input type="text" id="newOwnFirm"></div>
-                    <div class="modal-form-group"><label for="newNote">備考</label><input type="text" id="newNote"></div>
+                    <div class="modal-form-group"><label for="newNote">備考</label><textarea id="newNote" rows="4" style="width:100%;resize:vertical;font-family:inherit;font-size:13px;padding:8px;border:1px solid var(--border);background:var(--white);color:var(--fg);line-height:1.6;"></textarea></div>
                     <div class="modal-buttons">
                         <button type="button" class="btn-cancel" onclick="closeAddModal()">キャンセル</button>
                         <button type="submit">追加</button>
@@ -1020,6 +1023,21 @@
         </div>
 
         <!-- ヘルプモーダル -->
+        <!-- 備考編集モーダル -->
+        <div id="noteEditorModal" class="modal">
+            <div class="modal-content" style="max-width:520px;">
+                <div class="modal-header">
+                    <h2>備考を編集</h2>
+                    <span class="close-modal" onclick="closeNoteEditor()">&times;</span>
+                </div>
+                <textarea id="noteEditorTextarea" rows="10" style="width:100%;resize:vertical;font-family:'Inter',sans-serif;font-size:13px;padding:10px;border:1px solid var(--border);background:var(--white);color:var(--fg);line-height:1.7;outline:none;"></textarea>
+                <div class="modal-buttons">
+                    <button class="btn-add" onclick="saveNoteEdit()">保存</button>
+                    <button class="btn-cancel" onclick="closeNoteEditor()">キャンセル</button>
+                </div>
+            </div>
+        </div>
+
         <div id="helpModal" class="help-modal">
             <div class="help-modal-content">
                 <div class="help-modal-header">
@@ -1259,7 +1277,7 @@
                 const row = tbody.insertRow(); row.setAttribute('data-index', i);
                 const sel = `<select onchange="updateData(${i},'specialty',this.value)">${sNames.map((n,j)=>`<option value="${j}" ${p.specialty===String(j)?'selected':''}>${n}</option>`).join('')}</select>`;
                 row.innerHTML = `
-                    <td><input type="text" value="${p.id}" onchange="updateData(${i},'id',this.value)"></td>
+                    <td><input type="text" value="${p.id}" readonly style="width:48px;background:var(--surface);color:var(--secondary);cursor:default;text-align:center;"></td>
                     <td><input type="text" value="${p.name}" onchange="updateData(${i},'name',this.value)"></td>
                     <td><input type="text" value="${p.master}" placeholder="複数の場合は | で区切る" onchange="updateData(${i},'master',this.value)"></td>
                     <td><input type="text" value="${p.school}" onchange="updateData(${i},'school',this.value)"></td>
@@ -1270,7 +1288,7 @@
                     <td><input type="text" value="${p.joinYear}" placeholder="複数の場合は | で区切る" onchange="updateData(${i},'joinYear',this.value)"></td>
                     <td><input type="text" value="${p.independentYear}" onchange="updateData(${i},'independentYear',this.value)"></td>
                     <td><input type="text" value="${p.ownFirm}" onchange="updateData(${i},'ownFirm',this.value)"></td>
-                    <td><input type="text" value="${p.note}" onchange="updateData(${i},'note',this.value)"></td>
+                    <td><input type="text" value="${p.note}" readonly placeholder="クリックして編集..." style="cursor:pointer;" onclick="openNoteEditor(${i}, this)"></td>
                     <td><button class="btn-small btn-delete" onclick="deleteRow(${i})">${t.buttons.delete}</button></td>`;
             });
             const sb = document.getElementById('searchBox'); if (sb && sb.value) filterTable();
@@ -1304,9 +1322,31 @@
 
         function closeAddModal() { document.getElementById('addDataModal').style.display = 'none'; }
 
+        let _noteEditorIndex = null;
+        let _noteEditorInput = null;
+        function openNoteEditor(index, inputEl) {
+            _noteEditorIndex = index;
+            _noteEditorInput = inputEl;
+            document.getElementById('noteEditorTextarea').value = inputEl.value;
+            document.getElementById('noteEditorModal').style.display = 'block';
+            setTimeout(() => document.getElementById('noteEditorTextarea').focus(), 100);
+        }
+        function closeNoteEditor() {
+            document.getElementById('noteEditorModal').style.display = 'none';
+            _noteEditorIndex = null;
+            _noteEditorInput = null;
+        }
+        function saveNoteEdit() {
+            const val = document.getElementById('noteEditorTextarea').value;
+            if (_noteEditorInput) _noteEditorInput.value = val;
+            if (_noteEditorIndex !== null) updateData(_noteEditorIndex, 'note', val);
+            closeNoteEditor();
+        }
+
         window.onclick = e => {
             if (e.target == document.getElementById('addDataModal')) closeAddModal();
             if (e.target == document.getElementById('helpModal')) closeHelpModal();
+            if (e.target == document.getElementById('noteEditorModal')) closeNoteEditor();
         };
 
         document.addEventListener('DOMContentLoaded', () => {

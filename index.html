@@ -824,7 +824,7 @@
                 <span id="langText">English</span>
             </button>
             <h1 id="pageTitle">建築・デザイン師弟ネットワーク</h1>
-            <p class="subtitle" id="pageSubtitle">建築・デザイン界の師弟・指導・研修などの系譜をネットワークとして可視化します。<br>指導教授・所属事務所・留学先などの繋がりから、デザイン界の系譜を辿ることができます。</p>
+            <p class="subtitle" id="pageSubtitle">建築・デザイン界の師弟・指導・研修などの系譜をネットワークとして可視化します。<br>師匠・所属事務所・留学先などの繋がりから、デザイン界の系譜を辿ることができます。</p>
         </div>
 
         <!-- アップロード -->
@@ -844,14 +844,14 @@
                 <p class="block-title" id="dataEditTitle">データ編集</p>
                 <div class="search-wrapper">
                     <label for="searchBox" id="searchLabel">キーワード検索</label>
-                    <input type="text" id="searchBox" placeholder="氏名、指導教授、事務所名、出身校などで検索..." oninput="filterTable()">
+                    <input type="text" id="searchBox" placeholder="氏名、師匠、事務所名、出身校などで検索..." oninput="filterTable()">
                 </div>
             </div>
             <div class="table-wrapper">
                 <table class="data-table" id="dataTable">
                     <thead>
                         <tr>
-                            <th>識別番号</th><th>氏名</th><th>指導教授</th><th>出身校</th>
+                            <th>識別番号</th><th>氏名</th><th>師匠</th><th>出身校</th>
                             <th>留学歴</th><th>所属事務所</th><th>専門</th><th>生没年</th>
                             <th>在籍年</th><th>独立年</th><th>設立事務所</th><th>備考</th><th>操作</th>
                         </tr>
@@ -887,7 +887,7 @@
                     </div>
                     <div class="modal-form-group"><label for="newName">氏名</label><input type="text" id="newName" required></div>
                     <div class="modal-form-group">
-                        <label for="newMaster">指導教授</label>
+                        <label for="newMaster">師匠</label>
                         <input type="text" id="newMaster" placeholder="例: 前川國男　複数の場合は | で区切る（例: 前川國男|丹下健三）">
                         <small>複数指定する場合は | で区切ってください</small>
                     </div>
@@ -1059,14 +1059,14 @@
         const translations = {
             ja: {
                 pageTitle: '建築・デザイン師弟ネットワーク',
-                pageSubtitle: '建築・デザイン界の師弟・指導・研修などの系譜をネットワークとして可視化します。<br>指導教授・所属事務所・留学先などの繋がりから、デザイン界の系譜を辿ることができます。',
+                pageSubtitle: '建築・デザイン界の師弟・指導・研修などの系譜をネットワークとして可視化します。<br>師匠・所属事務所・留学先などの繋がりから、デザイン界の系譜を辿ることができます。',
                 langButtonText: 'English',
                 uploadTitle: 'CSVファイルをアップロード',
                 uploadText: 'ファイルをドラッグ&ドロップ または クリックして選択',
                 uploadButton: 'ファイルを選択',
                 dataEditTitle: 'データ編集',
-                searchPlaceholder: '氏名、指導教授、事務所名、出身校などで検索...',
-                tableHeaders: { id: '識別番号', name: '氏名', master: '指導教授', school: '出身校', studyAbroad: '留学歴', firm: '所属事務所', specialty: '専門', lifespan: '生没年', joinYear: '在籍年', independentYear: '独立年', ownFirm: '設立事務所', note: '備考', action: '操作' },
+                searchPlaceholder: '氏名、師匠、事務所名、出身校などで検索...',
+                tableHeaders: { id: '識別番号', name: '氏名', master: '師匠', school: '出身校', studyAbroad: '留学歴', firm: '所属事務所', specialty: '専門', lifespan: '生没年', joinYear: '在籍年', independentYear: '独立年', ownFirm: '設立事務所', note: '備考', action: '操作' },
                 buttons: { delete: '削除', add: '＋ 新規データを追加', update: 'ネットワークを更新', download: 'CSVをダウンロード', cancel: 'キャンセル', copy: 'コピー', copied: 'コピー済み' },
                 drawingSettings: '描画設定',
                 nodeColorLabel: 'ノード色分け',
@@ -1636,7 +1636,7 @@
                     `${isJa?'専門':'Specialty'}: ${sText}<br>` +
                     `${isJa?'出身校':'School'}: ${d.school||none}<br>` +
                     `${isJa?'所属事務所':'Firm'}: ${formatMultiValue(d.firm)||none}<br>` +
-                    `${isJa?'指導教授':'Mentor'}: ${formatMultiValue(d.master)||none}`;
+                    `${isJa?'師匠':'Mentor'}: ${formatMultiValue(d.master)||none}`;
                 document.getElementById('popupCenterBtn').textContent =
                     isJa ? 'この人を中心に放射状表示' : 'Center this person (radial)';
                 document.getElementById('popupCenterBtn').onclick = () => centerOnNode(d.id, d.name);
@@ -1811,7 +1811,7 @@
         function downloadMaskedCSV() {
             const source = _isMasked ? _originalData : currentData;
             const masked = _buildMaskedData(source);
-            const header = '識別番号,氏名,指導教授(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),専門(建築:0/インテリア:1/グラフィック:2/プロダクト:3/ファッション:4),生没年,在籍年(複数は|区切り),独立年,設立事務所,備考\n';
+            const header = '識別番号,氏名,師匠(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),専門(建築:0/インテリア:1/グラフィック:2/プロダクト:3/ファッション:4),生没年,在籍年(複数は|区切り),独立年,設立事務所,備考\n';
             const rows = masked.map(p => `${p.id},${p.name},${p.master},${p.school},${p.studyAbroad},${p.firm},${p.specialty},${p.lifespan},${p.joinYear},${p.independentYear},${p.ownFirm},${p.note}`).join('\n');
             const blob = new Blob([header+rows], {type:'text/csv;charset=utf-8;'});
             const link = document.createElement('a');
@@ -1824,7 +1824,7 @@
         }
 
         function downloadCSV() {
-            const header = '識別番号,氏名,指導教授(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),専門(建築:0/インテリア:1/グラフィック:2/プロダクト:3/ファッション:4),生没年,在籍年(複数は|区切り),独立年,設立事務所,備考\n';
+            const header = '識別番号,氏名,師匠(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),専門(建築:0/インテリア:1/グラフィック:2/プロダクト:3/ファッション:4),生没年,在籍年(複数は|区切り),独立年,設立事務所,備考\n';
             const rows = currentData.map(p => `${p.id},${p.name},${p.master},${p.school},${p.studyAbroad},${p.firm},${p.specialty},${p.lifespan},${p.joinYear},${p.independentYear},${p.ownFirm},${p.note}`).join('\n');
             const blob = new Blob([header+rows], {type:'text/csv;charset=utf-8;'});
             const link = document.createElement('a');

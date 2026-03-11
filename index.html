@@ -965,7 +965,7 @@
 
         <!-- ネットワーク表示 -->
         <div id="radialCenterBanner">
-            <strong id="radialCenterName"></strong> を中心に放射状表示中
+            <strong id="radialCenterName"></strong> を中心に表示中
             <button onclick="resetToNormalLayout()">元のレイアウトに戻す</button>
         </div>
         <div class="network-display-container" id="networkDisplayContainer" style="position:relative;">
@@ -974,7 +974,7 @@
                 <span class="popup-close" onclick="closeNodePopup()">&times;</span>
                 <h4 id="popupName"></h4>
                 <div class="popup-info" id="popupInfo"></div>
-                <button class="popup-btn" id="popupCenterBtn">この人を中心に放射状表示</button>
+                <button class="popup-btn" id="popupCenterBtn">この人を中心に表示</button>
             </div>
             <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()">
                 <span id="fullscreenIcon">⛶</span>
@@ -1482,12 +1482,12 @@
         function getLayoutConfig(layoutName) {
             if (isCommunitySpecified()) return { name:'cose', animate:true, animationDuration:1000, nodeRepulsion:6000, idealEdgeLength: e => e.data('groupEdge')?15:80, edgeElasticity: e => e.data('groupEdge')?500:200, gravity:0.8, numIter:2500, padding:50 };
             const configs = {
-                cose: { name:'cose', animate:true, animationDuration:1000, nodeRepulsion:8000, idealEdgeLength:100, edgeElasticity:100, gravity:1, numIter:1000, padding:50 },
-                breadthfirst: { name:'breadthfirst', directed:true, spacingFactor:1.5, padding:50 },
-                circle: { name:'circle', animate:true, animationDuration:500, padding:50 },
-                grid: { name:'grid', animate:true, animationDuration:500, padding:50 },
-                concentric: { name:'concentric', animate:true, animationDuration:500, padding:50, concentric: node => node.connectedEdges().filter(e=>!e.data('groupEdge')).length, levelWidth: ()=>2 },
-                random: { name:'random', animate:true, animationDuration:500, padding:50 }
+                cose: { name:'cose', animate:true, animationDuration:1000, fit:true, nodeRepulsion:8000, idealEdgeLength:100, edgeElasticity:100, gravity:1, numIter:1000, padding:50 },
+                breadthfirst: { name:'breadthfirst', directed:true, animate:true, animationDuration:500, fit:true, spacingFactor:1.5, padding:50 },
+                circle: { name:'circle', animate:true, animationDuration:500, fit:true, padding:50 },
+                grid: { name:'grid', animate:true, animationDuration:500, fit:true, padding:50 },
+                concentric: { name:'concentric', animate:true, animationDuration:500, fit:true, padding:50, concentric: node => node.connectedEdges().filter(e=>!e.data('groupEdge')).length, levelWidth: ()=>2 },
+                random: { name:'random', animate:true, animationDuration:500, fit:true, padding:50 }
             };
             return configs[layoutName] || configs.cose;
         }
@@ -1638,7 +1638,7 @@
                     `${isJa?'所属事務所':'Firm'}: ${formatMultiValue(d.firm)||none}<br>` +
                     `${isJa?'師匠':'Mentor'}: ${formatMultiValue(d.master)||none}`;
                 document.getElementById('popupCenterBtn').textContent =
-                    isJa ? 'この人を中心に放射状表示' : 'Center this person (radial)';
+                    isJa ? 'この人を中心に表示' : 'Center this person';
                 document.getElementById('popupCenterBtn').onclick = () => centerOnNode(d.id, d.name);
 
                 // ポップアップをノード位置に表示
@@ -1655,7 +1655,63 @@
             cy.on('tap', evt => { if (evt.target === cy) closeNodePopup(); });
         }
 
+        // ── RADIAL TREE LAYOUT ────────────────────────────────────────────────
+        function computeRadialTreePositions(rootId, distances) {
+            const R = 140; // レベルごとの半径
+
+            // BFSツリーを構築（distances済みのノードのみ）
+            const children = {};
+            cy.nodes().filter(n => n.style('display') !== 'none')
+                .forEach(n => { children[n.id()] = []; });
+            cy.edges().filter(e => e.style('display') !== 'none').forEach(e => {
+                const s = e.source().id(), t = e.target().id();
+                const ds = distances[s], dt = distances[t];
+                if (ds === undefined || dt === undefined) return;
+                if (dt === ds + 1) children[s].push(t);
+                else if (ds === dt + 1) children[t].push(s);
+            });
+
+            // サブツリーのサイズを計算
+            const size = {};
+            function calcSize(id) {
+                size[id] = 1 + children[id].reduce((s, c) => s + calcSize(c), 0);
+                return size[id];
+            }
+            calcSize(rootId);
+
+            // 角度範囲を再帰的に割り当てて座標を計算
+            const positions = {};
+            function place(id, angleFrom, angleTo) {
+                const angle = (angleFrom + angleTo) / 2;
+                const r = distances[id] * R;
+                positions[id] = { x: r * Math.cos(angle), y: r * Math.sin(angle) };
+                if (children[id].length === 0) return;
+                const parentSize = size[id] - 1;
+                let a = angleFrom;
+                children[id].forEach(c => {
+                    const span = (angleTo - angleFrom) * size[c] / parentSize;
+                    place(c, a, a + span);
+                    a += span;
+                });
+            }
+
+            positions[rootId] = { x: 0, y: 0 };
+            if (children[rootId].length > 0) {
+                const total = size[rootId] - 1;
+                let a = 0;
+                children[rootId].forEach(c => {
+                    const span = 2 * Math.PI * size[c] / total;
+                    place(c, a, a + span);
+                    a += span;
+                });
+            }
+            return positions;
+        }
+        // ── /RADIAL TREE LAYOUT ───────────────────────────────────────────────
+
         // ── RADIAL CENTER ─────────────────────────────────────────────────────
+        let _radialFitTimer = null;
+
         function centerOnNode(nodeId, nodeName) {
             closeNodePopup();
 
@@ -1687,18 +1743,16 @@
                 else e.style('display', 'element');
             });
 
-            // concentricレイアウト：距離が近いほど中心へ
+            // 放射状ツリーレイアウト（presetレイアウトでアニメーション＋fit一括管理）
+            const positions = computeRadialTreePositions(nodeId, distances);
+
             cy.layout({
-                name: 'concentric',
-                concentric: node => {
-                    const d = distances[node.id()];
-                    return d === undefined ? 0 : maxDist - d + 1;
-                },
-                levelWidth: () => 1,
-                padding: 60,
-                minNodeSpacing: 40,
+                name: 'preset',
+                positions: node => positions[node.id()] || node.position(),
                 animate: true,
-                animationDuration: 800
+                animationDuration: 900,
+                fit: true,
+                padding: 60
             }).run();
 
             document.getElementById('radialCenterName').textContent = nodeName || nodeId;
@@ -1710,6 +1764,7 @@
         }
 
         function resetToNormalLayout() {
+            clearTimeout(_radialFitTimer);
             document.getElementById('radialCenterBanner').style.display = 'none';
             cy.nodes().style('display', 'element');
             cy.edges().style('display', 'element');

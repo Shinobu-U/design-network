@@ -204,12 +204,13 @@
         /* ── TABLE ────────────────────────── */
         .table-wrapper {
             max-height: 340px;
+            overflow-x: auto;
             overflow-y: auto;
             margin-bottom: 0;
             border: 1px solid var(--border);
         }
 
-        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table { width: max-content; min-width: 100%; border-collapse: collapse; }
 
         .data-table th, .data-table td {
             padding: 10px 12px;

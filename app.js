@@ -11,8 +11,8 @@
         let currentLanguage = 'ja';
         let isFullscreen = false;
 
-        const specialtyNamesJa = ['建築', 'インテリア/空間', 'グラフィック', 'プロダクト/インダストリアル', '写真'];
-        const specialtyNamesEn = ['Architecture', 'Interior/Space', 'Graphic Design', 'Product/Industrial', 'Photography'];
+        const specialtyNamesJa = ['建築', 'インテリア', 'プロダクト', 'グラフィック', '写真'];
+        const specialtyNamesEn = ['Architecture', 'Interior', 'Product', 'Graphic Design', 'Photography'];
 
         const translations = {
             ja: {
@@ -30,7 +30,7 @@
                 exportTitle: '書き出し',
                 drawingSettings: '描画設定',
                 nodeColorLabel: 'ノード色分け',
-                colorModes: { specialty: '専門（建築/インテリア/グラフィック/プロダクト/写真）', firm: '所属事務所', school: '出身校', ownFirm: '設立事務所', studyAbroad: '留学歴' },
+                colorModes: { specialty: '専門（建築/インテリア/プロダクト/グラフィック/写真）', firm: '所属事務所', school: '出身校', ownFirm: '設立事務所', studyAbroad: '留学歴' },
                 layoutLabel: 'レイアウト',
                 layouts: { cose: 'Spring Layout (力指向)', breadthfirst: 'Breadthfirst (階層)', circle: 'Circle (円形)', grid: 'Grid (格子)', concentric: 'Concentric (同心円)', random: 'Random (ランダム)' },
                 communityLabel: 'コミュニティ',
@@ -1069,7 +1069,7 @@
         }
 
         function _buildCSVBlob(data) {
-            const header = '識別番号,氏名,専門(建築:0/インテリア:1/グラフィック:2/プロダクト:3/写真:4),生没年,国籍,師匠(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),在籍年(複数は|区切り),独立年,設立事務所,備考\n';
+            const header = '識別番号,氏名,専門(建築:0/インテリア:1/プロダクト:2/グラフィック:3/写真:4),生没年,国籍,師匠(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),在籍年(複数は|区切り),独立年,設立事務所,備考\n';
             const rows = data.map(p => `${p.id},${p.name},${p.specialty},${p.lifespan},${p.nationality||''},${p.master},${p.school},${p.studyAbroad},${p.firm},${p.joinYear},${p.independentYear},${p.ownFirm},${p.note}`).join('\n');
             return new Blob([header+rows], {type:'text/csv;charset=utf-8;'});
         }

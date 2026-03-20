@@ -170,13 +170,14 @@
                 {pos:0.8, r:171,g:221,b:164}, {pos:0.9, r:102,g:194,b:165},
                 {pos:1.0, r:94,g:79,b:162}
             ];
+            const lighten = (r,g,b) => { const f=0.25; return `rgb(${Math.round(r+(255-r)*f)},${Math.round(g+(255-g)*f)},${Math.round(b+(255-b)*f)})`; };
             for (let i = 0; i < colors.length-1; i++) {
                 if (t >= colors[i].pos && t <= colors[i+1].pos) {
                     const c1=colors[i], c2=colors[i+1], lt=(t-c1.pos)/(c2.pos-c1.pos);
-                    return `rgb(${Math.round(c1.r+(c2.r-c1.r)*lt)},${Math.round(c1.g+(c2.g-c1.g)*lt)},${Math.round(c1.b+(c2.b-c1.b)*lt)})`;
+                    return lighten(Math.round(c1.r+(c2.r-c1.r)*lt),Math.round(c1.g+(c2.g-c1.g)*lt),Math.round(c1.b+(c2.b-c1.b)*lt));
                 }
             }
-            return 'rgb(94,79,162)';
+            return lighten(94,79,162);
         }
 
         const uploadArea = document.getElementById('uploadArea');

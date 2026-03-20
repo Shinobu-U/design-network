@@ -230,9 +230,44 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .col-resize-handle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            cursor: col-resize;
+            z-index: 1;
+            border-right: 1.5px solid var(--border);
+        }
+
+        .col-resize-handle:hover,
+        .col-resize-handle.resizing {
+            background: var(--fg);
+            opacity: 0.25;
+            border-right: none;
         }
 
         .data-table tr:last-child td { border-bottom: none; }
+
+        .data-table th:nth-child(1)  { width: 80px;  }  /* 識別番号 */
+        .data-table th:nth-child(2)  { width: 140px; }  /* 氏名 */
+        .data-table th:nth-child(3)  { width: 130px; }  /* 専門 */
+        .data-table th:nth-child(4)  { width: 110px; }  /* 生没年 */
+        .data-table th:nth-child(5)  { width: 100px; }  /* 国籍 */
+        .data-table th:nth-child(6)  { width: 160px; }  /* 師匠 */
+        .data-table th:nth-child(7)  { width: 150px; }  /* 出身校 */
+        .data-table th:nth-child(8)  { width: 120px; }  /* 留学歴 */
+        .data-table th:nth-child(9)  { width: 160px; }  /* 所属事務所 */
+        .data-table th:nth-child(10) { width: 130px; }  /* 在籍年 */
+        .data-table th:nth-child(11) { width: 90px;  }  /* 独立年 */
+        .data-table th:nth-child(12) { width: 150px; }  /* 設立事務所 */
+        .data-table th:nth-child(13) { width: 200px; }  /* 備考 */
+        .data-table th:nth-child(14) { width: 60px;  }  /* 操作 */
 
         .data-table td:first-child input { width: 48px !important; text-align: center; background: var(--surface) !important; color: var(--secondary) !important; cursor: default !important; }
 

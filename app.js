@@ -297,7 +297,35 @@
             if (e.target == document.getElementById('noteEditorModal')) closeNoteEditor();
         };
 
+        function initColumnResize() {
+            const ths = document.querySelectorAll('.data-table th');
+            ths.forEach((th, i) => {
+                if (i === ths.length - 1) return; // 操作列はスキップ
+                const handle = document.createElement('div');
+                handle.className = 'col-resize-handle';
+                th.appendChild(handle);
+                handle.addEventListener('mousedown', e => {
+                    const startX = e.pageX;
+                    const startWidth = th.getBoundingClientRect().width;
+                    handle.classList.add('resizing');
+                    const onMove = e => {
+                        const w = startWidth + (e.pageX - startX);
+                        if (w > 40) th.style.width = w + 'px';
+                    };
+                    const onUp = () => {
+                        handle.classList.remove('resizing');
+                        document.removeEventListener('mousemove', onMove);
+                        document.removeEventListener('mouseup', onUp);
+                    };
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup', onUp);
+                    e.preventDefault();
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            initColumnResize();
             const form = document.getElementById('addDataForm');
             if (form) form.addEventListener('submit', e => {
                 e.preventDefault();

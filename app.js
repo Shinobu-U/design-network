@@ -617,7 +617,7 @@
                         'width': ele => Math.max(36, 28+ele.connectedEdges().filter(e=>!e.data('groupEdge')).length*10)+'px',
                         'height': ele => Math.max(36, 28+ele.connectedEdges().filter(e=>!e.data('groupEdge')).length*10)+'px',
                         'border-width': 0,
-                        'text-outline-width': 2, 'text-outline-color': '#FCFBF8'
+                        'text-outline-width': 0
                     }},
                     { selector: '$node > node', style: {
                         'padding': '28px',

@@ -1126,24 +1126,3 @@
         function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.style.display = 'block'; }
         function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
 
-        // ── PASSWORD GATE ─────────────────────────────────
-        const GATE_PASSWORD = '#^BeTekW@R&42j@kizHF';
-
-        (function() {
-            if (sessionStorage.getItem('dn_auth') === '1') {
-                document.getElementById('passwordGate').style.display = 'none';
-            }
-        })();
-
-        function checkPassword() {
-            const input = document.getElementById('gateInput').value;
-            if (input === GATE_PASSWORD) {
-                sessionStorage.setItem('dn_auth', '1');
-                document.getElementById('passwordGate').style.display = 'none';
-            } else {
-                document.getElementById('gateError').style.display = 'block';
-                document.getElementById('gateInput').value = '';
-                document.getElementById('gateInput').focus();
-            }
-        }
-        // ── /PASSWORD GATE ────────────────────────────────

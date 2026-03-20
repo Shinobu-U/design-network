@@ -136,7 +136,7 @@
         function updateTableHeaders() {
             const t = translations[currentLanguage];
             const headers = document.querySelectorAll('.data-table th');
-            const keys = ['id','name','specialty','nationality','master','school','studyAbroad','firm','lifespan','joinYear','independentYear','ownFirm','note','action'];
+            const keys = ['id','name','specialty','lifespan','nationality','master','school','studyAbroad','firm','joinYear','independentYear','ownFirm','note','action'];
             headers.forEach((h, i) => { if (keys[i] && t.tableHeaders[keys[i]]) h.textContent = t.tableHeaders[keys[i]]; });
         }
 
@@ -211,7 +211,7 @@
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim(); if (!line) continue;
                 const v = line.split(',').map(x => x.trim());
-                if (v.length >= 7) data.push({ id:v[0], name:v[1], specialty:v[2]||'0', nationality:v[3]||'', master:v[4]||'', school:v[5]||'', studyAbroad:v[6]||'', firm:v[7]||'', lifespan:v[8]||'', joinYear:v[9]||'', independentYear:v[10]||'', ownFirm:v[11]||'', note:v[12]||'' });
+                if (v.length >= 7) data.push({ id:v[0], name:v[1], specialty:v[2]||'0', lifespan:v[3]||'', nationality:v[4]||'', master:v[5]||'', school:v[6]||'', studyAbroad:v[7]||'', firm:v[8]||'', joinYear:v[9]||'', independentYear:v[10]||'', ownFirm:v[11]||'', note:v[12]||'' });
             }
             return data;
         }
@@ -227,12 +227,12 @@
                     <td><input type="text" value="${p.id}" readonly style="width:48px;background:var(--surface);color:var(--secondary);cursor:default;text-align:center;"></td>
                     <td><input type="text" value="${p.name}" onchange="updateData(${i},'name',this.value)"></td>
                     <td>${sel}</td>
+                    <td><input type="text" value="${p.lifespan}" onchange="updateData(${i},'lifespan',this.value)"></td>
                     <td><input type="text" value="${p.nationality||''}" onchange="updateData(${i},'nationality',this.value)"></td>
                     <td><input type="text" value="${p.master}" placeholder="複数の場合は | で区切る" onchange="updateData(${i},'master',this.value)"></td>
                     <td><input type="text" value="${p.school}" onchange="updateData(${i},'school',this.value)"></td>
                     <td><input type="text" value="${p.studyAbroad}" onchange="updateData(${i},'studyAbroad',this.value)"></td>
                     <td><input type="text" value="${p.firm}" placeholder="複数の場合は | で区切る" onchange="updateData(${i},'firm',this.value)"></td>
-                    <td><input type="text" value="${p.lifespan}" onchange="updateData(${i},'lifespan',this.value)"></td>
                     <td><input type="text" value="${p.joinYear}" placeholder="複数の場合は | で区切る" onchange="updateData(${i},'joinYear',this.value)"></td>
                     <td><input type="text" value="${p.independentYear}" onchange="updateData(${i},'independentYear',this.value)"></td>
                     <td><input type="text" value="${p.ownFirm}" onchange="updateData(${i},'ownFirm',this.value)"></td>
@@ -1069,8 +1069,8 @@
         }
 
         function _buildCSVBlob(data) {
-            const header = '識別番号,氏名,専門(建築:0/インテリア:1/グラフィック:2/プロダクト:3/写真:4),国籍,師匠(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),生没年,在籍年(複数は|区切り),独立年,設立事務所,備考\n';
-            const rows = data.map(p => `${p.id},${p.name},${p.specialty},${p.nationality||''},${p.master},${p.school},${p.studyAbroad},${p.firm},${p.lifespan},${p.joinYear},${p.independentYear},${p.ownFirm},${p.note}`).join('\n');
+            const header = '識別番号,氏名,専門(建築:0/インテリア:1/グラフィック:2/プロダクト:3/写真:4),生没年,国籍,師匠(複数は|区切り),出身校,留学歴,所属事務所(複数は|区切り),在籍年(複数は|区切り),独立年,設立事務所,備考\n';
+            const rows = data.map(p => `${p.id},${p.name},${p.specialty},${p.lifespan},${p.nationality||''},${p.master},${p.school},${p.studyAbroad},${p.firm},${p.joinYear},${p.independentYear},${p.ownFirm},${p.note}`).join('\n');
             return new Blob([header+rows], {type:'text/csv;charset=utf-8;'});
         }
 

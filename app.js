@@ -616,7 +616,7 @@
                         'font-size': '12px', 'font-weight': '600',
                         'width': ele => Math.max(36, 28+ele.connectedEdges().filter(e=>!e.data('groupEdge')).length*10)+'px',
                         'height': ele => Math.max(36, 28+ele.connectedEdges().filter(e=>!e.data('groupEdge')).length*10)+'px',
-                        'border-width': 2, 'border-color': '#242321',
+                        'border-width': 0,
                         'text-outline-width': 2, 'text-outline-color': '#FCFBF8'
                     }},
                     { selector: '$node > node', style: {
